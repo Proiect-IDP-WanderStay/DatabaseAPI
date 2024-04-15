@@ -10,7 +10,6 @@ bp_hotel = Blueprint("hotels", __name__)
 def home():
     return "Hello, Hotels!"
 
-
 @bp_hotel.route("/WanderRooms/getRooms", method=['POST'])
 def getRooms():
     payload = request.get_json(silent=True)
