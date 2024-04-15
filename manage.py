@@ -1,10 +1,12 @@
 from flask.cli import FlaskGroup
 from project.setupDatabseIfo import add_all
 from project import app, db 
-
+from project.hotels import bp_hotel
 
 cli = FlaskGroup(app)
 
+# blueprints
+app.register_blueprint(bp_hotel)
 
 @cli.command("create_db")
 def create_db():
