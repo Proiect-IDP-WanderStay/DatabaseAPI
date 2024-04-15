@@ -3,13 +3,9 @@ from flask import Flask,  jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
 
-from .hotels import bp_hotel
-
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
 
-# blueprints
-app.register_blueprint(bp_hotel)
 
 
 # database

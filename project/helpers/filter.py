@@ -1,6 +1,4 @@
-from ..models import Room, Hotel, Contact
-
-
+from ..models import Hotel, Contact
 
 MAX_PRICE = 100000
 
@@ -44,14 +42,13 @@ def filter_generic(filter, room):
     if (filter.city != '') and (city != filter.city):
         ok = 0
         return ok
-    
+
     country = contact.country
     if (filter.country != '') and (country != filter.country):
         ok = 0
         return ok
     
-    
-    if (filter.price_min > room.ptice) or (filter.price_max < room.price):
+    if (filter.price_min > room.price) or (filter.price_max < room.price):
         ok = 0
         return ok
 
@@ -59,8 +56,8 @@ def filter_generic(filter, room):
         ok = 0
         return ok
     
-    if (filter.city != -1) and (filter.hotel_id != room.hotel_id):
+    if (filter.hotel_id != -1) and (filter.hotel_id != room.hotel_id):
         ok = 0
         return ok
-
+    
     return ok
