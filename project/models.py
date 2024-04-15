@@ -22,7 +22,7 @@ class Contact(db.Model):
    email = db.Column(db.String(128), nullable=False)
    
    def __init__(self, id, phone, country, city, street, email):
-      self.id = id
+      # self.id = id
       self.phone = phone
       self.country = country
       self.city = city
@@ -38,20 +38,20 @@ class Hotel(db.Model):
    id: int
    name: str
    contact_id: int
-   rating_id: int
+   rating: float
 
 
    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
    name = db.Column(db.String(128), nullable=False)
    contact_id = db.Column(db.Integer, db.ForeignKey("Contact.id"), unique=False)
-   rating_id = db.Column(db.Integer, db.ForeignKey("Contact.id"), unique=False)
+   rating= db.Column(db.Float(precision=5), unique=False)
 
    
-   def __init__(self, id, name, contact_id, rating_id):
-      self.id = id
+   def __init__(self, id, name, contact_id, rating):
+      # self.id = id
       self.name = name
       self.contact_id = contact_id
-      self.rating_id = rating_id
+      self.rating = rating
 
 
 @dataclass
@@ -68,13 +68,11 @@ class Room(db.Model):
    price = db.Column(db.Float(precision=5), nullable=False)
    nr_people = db.Column(db.Integer, nullable=False)
    
-   def __init__(self, id, phone, country, city, street, email):
+   def __init__(self, id, hotel_id, price, nr_people):
       self.id = id
-      self.phone = phone
-      self.country = country
-      self.city = city
-      self.street = street
-      self.email = email
+      self.hotel_id = hotel_id
+      self.price = price
+      self.nr_people = nr_people
 
 
 @dataclass
@@ -112,7 +110,7 @@ class Rating(db.Model):
 
    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
    comment = db.Column(db.String(128), nullable=False)
-   user_id = db.Column(db.Integer, db.ForeignKey("Orase.id"))
+   user_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
    stars = db.Column(db.Float(precision=5), default=0)
 
    def __init__(self, id, comment, user_id, stars):
