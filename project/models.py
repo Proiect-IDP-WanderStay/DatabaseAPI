@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from werkzeug.security import generate_password_hash
 
 from . import db
 
@@ -22,7 +23,7 @@ class Contact(db.Model):
    email = db.Column(db.String(128), nullable=False)
    
    def __init__(self, id, phone, country, city, street, email):
-      # self.id = id
+      self.id = id
       self.phone = phone
       self.country = country
       self.city = city
@@ -48,7 +49,7 @@ class Hotel(db.Model):
 
    
    def __init__(self, id, name, contact_id, rating):
-      # self.id = id
+      self.id = id
       self.name = name
       self.contact_id = contact_id
       self.rating = rating
@@ -87,16 +88,21 @@ class User(db.Model):
 
    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
    name = db.Column(db.String(128), nullable=False)
-   password = db.Column(db.String(128), nullable=False)
+   password = db.Column(db.String(250), nullable=False)
    created_date = db.Column(db.DateTime, nullable=False, unique=False, default=datetime.utcnow())
    mail = db.Column(db.String(128), nullable=False)
 
    def __init__(self, id, name, password, created_date, mail):
       self.id = id
       self.name = name
-      self.password = password
+      self.password = self.encrypt_password(password)
       self.created_date = created_date
       self.mail = mail
+
+   def encrypt_password(self, password):
+      """Encrypt password"""
+      return generate_password_hash(password)
+   
 
 
 @dataclass
