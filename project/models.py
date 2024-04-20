@@ -134,14 +134,16 @@ class Reservation(db.Model):
    user_id: int
    start_date: datetime
    end_date: datetime
+   room_id = int 
 
    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
    user_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
    start_date = db.Column(db.DateTime, default=0)
-   end_date = db.Column(db.DateTime, nullable=False, unique=False)
+   end_date = db.Column(db.DateTime, nullable=False)
+   room_id = db.Column(db.Integer, db.ForeignKey("Rooms.id"))
 
-   def __init__(self, id, user_id, start_date, end_date):
-      self.id = id
+   def __init__(self, user_id, start_date, end_date, room_id):
       self.user_id = user_id
       self.start_date = start_date
       self.end_date = end_date
+      self.room_id = room_id

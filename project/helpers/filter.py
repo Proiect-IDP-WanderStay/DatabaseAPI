@@ -1,6 +1,9 @@
-from ..models import Hotel, Contact
+from ..models import Hotel, Contact, Reservation
+from datetime import datetime, timezone
+from .checkers import check_if_free
 
 MAX_PRICE = 100000
+
 
 class Filter:
     def __init__(self) -> None:
@@ -10,6 +13,10 @@ class Filter:
         self.price_max = MAX_PRICE
         self.size = -1
         self.hotel_id = -1
+        self.exists_start = False
+        self.exists_end = False
+        self.start_date = datetime(year=1900, month=1, day=1)
+        self.end_date = datetime(year=1900, month=1, day=1)
 
     def read_filter(self, json):
         if not json:
@@ -27,8 +34,12 @@ class Filter:
             self.size = json['size']
         if ('hotel_id' in json) and (json['hotel_id'] >= 0):
             self.hotel_id = json['hotel_id']
-
-
+        if ('start_date' in json):
+            self.start_date = json['start_date']
+            self.exists_start = True
+        if ('end_date' in json):
+            self.end_date = json['end_date']
+            self.exists_end = True
 
 def filter_generic(filter, room):
     ok = True
@@ -60,4 +71,8 @@ def filter_generic(filter, room):
         ok = 0
         return ok
     
+    if filter.exists_start:
+        if not check_if_free(filter.start_date, filter.end_date, room.id):
+            ok = 0
+
     return ok
