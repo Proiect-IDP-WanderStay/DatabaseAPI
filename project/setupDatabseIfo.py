@@ -217,61 +217,71 @@ RESERVATIONS = [
         'id': '1',
         'user_id': '1',
         'start_date': '2024-05-15',
-        'end_date': '2024-05-20'
+        'end_date': '2024-05-20',
+        'room_id': '1'
     },
     {
         'id': '2',
         'user_id': '2',
         'start_date': '2024-06-10',
-        'end_date': '2024-06-15'
+        'end_date': '2024-06-15',
+        'room_id': '1'
     },
     {
         'id': '3',
         'user_id': '2',
         'start_date': '2024-07-01',
-        'end_date': '2024-07-07'
+        'end_date': '2024-07-07',
+        'room_id': '1'
     },
     {
         'id': '4',
         'user_id': '1',
         'start_date': '2024-08-20',
-        'end_date': '2024-08-25'
+        'end_date': '2024-08-25',
+        'room_id': '2'
     },
     {
         'id': '5',
         'user_id': '5',
         'start_date': '2024-09-05',
-        'end_date': '2024-09-10'
+        'end_date': '2024-09-10',
+        'room_id': '5'
     },
     {
         'id': '6',
         'user_id': '6',
         'start_date': '2024-10-15',
-        'end_date': '2024-10-20'
+        'end_date': '2024-10-20',
+        'room_id': '6'
     },
     {
         'id': '7',
         'user_id': '7',
         'start_date': '2024-11-10',
-        'end_date': '2024-11-15'
+        'end_date': '2024-11-15',
+        'room_id': '7'
     },
     {
         'id': '8',
         'user_id': '6',
         'start_date': '2024-12-01',
-        'end_date': '2024-12-07'
+        'end_date': '2024-12-07',
+        'room_id': '8'
     },
     {
         'id': '9',
         'user_id': '9',
         'start_date': '2025-01-20',
-        'end_date': '2025-01-25'
+        'end_date': '2025-01-25',
+        'room_id': '9'
     },
     {
         'id': '10',
         'user_id': '5',
         'start_date': '2025-02-05',
-        'end_date': '2025-02-10'
+        'end_date': '2025-02-10',
+        'room_id': '10'
     }
 ]
 
@@ -379,10 +389,11 @@ def add_rooms():
     
 def add_reservation():
     for res in RESERVATIONS:
-        reservation = Reservation(id = res['id'],
+        reservation = Reservation(
                                 user_id = res['user_id'],
                                 start_date = res['start_date'],
-                                end_date = res['end_date'])
+                                end_date = res['end_date'],
+                                room_id = res['room_id'])
         db.session.add(reservation)
     return
 
@@ -406,9 +417,11 @@ def add_all():
     add_hotels()
     db.session.commit()
 
+    add_rooms()
+    db.session.commit()
+
     add_reservation()
     db.session.commit()
 
-    add_rooms()
-    db.session.commit()
+
     
