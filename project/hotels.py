@@ -103,7 +103,7 @@ def reserve(user_id):
                             start_date = payload['start_date'],
                             end_date = payload['end_date'],
                             room_id = payload['room_id'])
-    print(reservation.id)
+
     db.session.add(reservation)
     db.session.commit()
 
@@ -111,3 +111,81 @@ def reserve(user_id):
             "message": "The room was reserved ",
             "data": None,
         }, 200
+
+
+@bp_hotel.route("/WanderRooms/cancelRoom", methods=['POST'])
+@token_required
+def cancel(user_id):
+    payload = request.get_json(silent=True)
+    if (not payload) or (not 'reservation_id' in payload):
+        return {
+            "message": "The reservation was not specified ",
+            "data": None,
+            "error": "Bad request"
+        }, 400
+    
+    reservation = Reservation.query.filter_by(id=payload['reservation_id'], user_id=user_id).first()
+    if (not reservation):
+        return {
+            "message": "The reservation does not exist ",
+            "error": "Bad request",
+        }, 400
+    
+    db.session.delete(reservation)
+    db.session.commit()
+
+    return {
+            "message": "The room was canceled ",
+            "data": None,
+        }, 200
+
+@bp_hotel.route("/WanderRooms/updateReservation", methods=['POST'])
+@token_required
+def update(user_id):
+    payload = request.get_json(silent=True)
+
+    if (not payload) or (not 'reservation_id' in payload):
+        return {
+            "message": "The reservation was not specified ",
+            "data": None,
+            "error": "Bad request"
+        }, 400
+    
+    reservation = Reservation.query.filter_by(id=payload['reservation_id'], user_id=user_id).first()
+    if (not reservation):
+        return {
+            "message": "The reservation does not exist ",
+            "error": "Bad request",
+        }, 400
+    message = ''
+    if 'end_date' in payload:
+        reservation.end_date = payload['end_date']
+        message = 'End date updated\n'
+
+    if 'start_date' in payload:
+        reservation.start_date = payload['start_date']
+        message = message + 'Start date updated\n'
+
+    db.session.commit()
+    print(message)
+    return {
+            "message": message,
+        }, 200
+
+@bp_hotel.route("/WanderRooms/getHistory", methods=['POST'])
+@token_required
+def history(user_id):
+
+    reservations = Reservation.query.filter_by(user_id=user_id).all()
+
+    if not reservations:
+        return {
+            "message": "No reservations found for this user",
+            "data": None,
+            "error": "Not Found"
+        }, 404
+    
+    return {
+            "data": reservations,
+        }, 200
+    
