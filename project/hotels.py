@@ -67,8 +67,7 @@ def getRooms():
 
 
 @bp_hotel.route("/WanderRooms/reserveRoom", methods=['POST'])
-@token_required
-def reserve(user_id):
+def reserve():
     payload = request.get_json(silent=True)
 
     if (not payload):
@@ -78,19 +77,25 @@ def reserve(user_id):
             "error": "Bad request"
         }, 400
     
+    user_id = payload["user_id"]
+    if (not 'user_id' in payload):
+        return {
+            "message": "IO_API: Please provide user_id",
+            "error": "Bad request"
+        }, 400
+    
+
     if not ('start_date' in payload and 'end_date' in payload):
         return {
             "message": "Please provide start_date and end_date ",
-            "data": None,
             "error": "Bad request"
-        }, 401
+        }, 400
     
     if not ('room_id' in payload):
         return {
             "message": "Please provide room_id ",
-            "data": None,
             "error": "Bad request"
-        }, 402
+        }, 400
 
     if not check_if_free(payload['start_date'], payload['end_date'], payload['room_id']):
         return {
@@ -109,21 +114,25 @@ def reserve(user_id):
 
     return {
             "message": "The room was reserved ",
-            "data": None,
         }, 200
 
 
 @bp_hotel.route("/WanderRooms/cancelRoom", methods=['POST'])
-@token_required
-def cancel(user_id):
+def cancel():
     payload = request.get_json(silent=True)
     if (not payload) or (not 'reservation_id' in payload):
         return {
             "message": "The reservation was not specified ",
-            "data": None,
             "error": "Bad request"
         }, 400
     
+    user_id = payload["user_id"]
+    if (not 'user_id' in payload):
+        return {
+            "message": "IO_API: Please provide user_id",
+            "error": "Bad request"
+        }, 400
+
     reservation = Reservation.query.filter_by(id=payload['reservation_id'], user_id=user_id).first()
     if (not reservation):
         return {
@@ -135,22 +144,26 @@ def cancel(user_id):
     db.session.commit()
 
     return {
-            "message": "The room was canceled ",
-            "data": None,
+            "message": "The reservation was canceled ",
         }, 200
 
-@bp_hotel.route("/WanderRooms/updateReservation", methods=['POST'])
-@token_required
-def update(user_id):
+@bp_hotel.route("/WanderRooms/updateReservation", methods=['PUT'])
+def update():
     payload = request.get_json(silent=True)
 
     if (not payload) or (not 'reservation_id' in payload):
         return {
             "message": "The reservation was not specified ",
-            "data": None,
             "error": "Bad request"
         }, 400
     
+    user_id = payload["user_id"]
+    if (not 'user_id' in payload):
+        return {
+            "message": "IO_API: Please provide user_id",
+            "error": "Bad request"
+        }, 400
+
     reservation = Reservation.query.filter_by(id=payload['reservation_id'], user_id=user_id).first()
     if (not reservation):
         return {
@@ -173,15 +186,27 @@ def update(user_id):
         }, 200
 
 @bp_hotel.route("/WanderRooms/getHistory", methods=['POST'])
-@token_required
-def history(user_id):
+def history():
+    payload = request.get_json(silent=True)
+
+    if (not payload):
+        return {
+            "message": "IO_API: No payload given ",
+            "error": "Bad request"
+        }, 400
+
+    user_id = payload["user_id"]
+    if (not 'user_id' in payload):
+        return {
+            "message": "IO_API: Please provide user_id",
+            "error": "Bad request"
+        }, 400
 
     reservations = Reservation.query.filter_by(user_id=user_id).all()
 
     if not reservations:
         return {
             "message": "No reservations found for this user",
-            "data": None,
             "error": "Not Found"
         }, 404
     
