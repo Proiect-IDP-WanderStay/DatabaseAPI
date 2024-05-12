@@ -6,6 +6,15 @@ from .helpers.checkers import check_if_free
 from functools import wraps
 import requests
 from . import db
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST, Gauge, Summary, Histogram, Info, start_http_server
+
+room_reservations_counter = Counter('room_reservations_counter', 
+                'This is a counter for room reservations')
+room_reservations_cancels = Counter('room_reservations_cancels', 
+                'This is a counter for room cancels')
+i = Info('IO_API', 'This is IO API Info')
+i.info({'version': '1.0.1', 'buildhost': 'wanderstay'})
+
 
 bp_hotel = Blueprint("hotels", __name__)
 
@@ -40,6 +49,11 @@ def token_required(f):
         return f(user_id ,*args, **kwargs)
 
     return decorated
+
+
+@bp_hotel.route("/metrics")
+def metrics():
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @bp_hotel.route("/")
@@ -112,6 +126,7 @@ def reserve():
     db.session.add(reservation)
     db.session.commit()
 
+    room_reservations_counter.inc()
     return {
             "message": "The room was reserved ",
         }, 200
@@ -143,6 +158,7 @@ def cancel():
     db.session.delete(reservation)
     db.session.commit()
 
+    room_reservations_cancels.inc()
     return {
             "message": "The reservation was canceled ",
         }, 200
